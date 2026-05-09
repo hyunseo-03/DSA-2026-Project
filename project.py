@@ -90,3 +90,7 @@ if __name__ == "__main__":
     main()
 
     print("H")
+    print("E")
+    print("L")
+    print("L")
+    print("O")
