@@ -1,5 +1,6 @@
 import random
 import pygame
+from enemy import move_enemies
 
 MAP_WIDTH = 30
 MAP_HEIGHT = 18
