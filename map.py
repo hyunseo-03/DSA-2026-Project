@@ -179,15 +179,19 @@ def main():
 
                 elif event.key == pygame.K_UP:
                     player_x, player_y = move_player(dungeon, player_x, player_y, 0, -1)
+                    move_enemies(dungeon, player_x, player_y, WALL, FLOOR, PLAYER, ENEMY, EXIT, ITEM)
 
                 elif event.key == pygame.K_DOWN:
                     player_x, player_y = move_player(dungeon, player_x, player_y, 0, 1)
+                    move_enemies(dungeon, player_x, player_y, WALL, FLOOR, PLAYER, ENEMY, EXIT, ITEM)
 
                 elif event.key == pygame.K_LEFT:
                     player_x, player_y = move_player(dungeon, player_x, player_y, -1, 0)
+                    move_enemies(dungeon, player_x, player_y, WALL, FLOOR, PLAYER, ENEMY, EXIT, ITEM)
 
                 elif event.key == pygame.K_RIGHT:
                     player_x, player_y = move_player(dungeon, player_x, player_y, 1, 0)
+                    move_enemies(dungeon, player_x, player_y, WALL, FLOOR, PLAYER, ENEMY, EXIT, ITEM)
 
         draw_map(screen, dungeon)
         pygame.display.flip()
