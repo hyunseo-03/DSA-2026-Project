@@ -1,9 +1,6 @@
 import random
 import pygame
 
-# =========================
-# 기본 설정
-# =========================
 MAP_WIDTH = 30
 MAP_HEIGHT = 18
 TILE_SIZE = 32
@@ -30,9 +27,6 @@ COLORS = {
 }
 
 
-# =========================
-# 맵 생성 함수
-# =========================
 def create_empty_map():
     return [[WALL for _ in range(MAP_WIDTH)] for _ in range(MAP_HEIGHT)]
 
@@ -60,7 +54,6 @@ def generate_dungeon(room_count=8):
     for _ in range(room_count):
         room_w = random.randint(4, 8)
         room_h = random.randint(3, 5)
-
         x = random.randint(1, MAP_WIDTH - room_w - 2)
         y = random.randint(1, MAP_HEIGHT - room_h - 2)
 
@@ -94,58 +87,6 @@ def place_object(dungeon, symbol):
             return x, y
 
 
-# =========================
-# pygame 그리기 함수
-# =========================
-def draw_map(screen, dungeon):
-    screen.fill(COLORS["BACKGROUND"])
-
-    for y in range(MAP_HEIGHT):
-        for x in range(MAP_WIDTH):
-            cell = dungeon[y][x]
-            rect = pygame.Rect(
-                x * TILE_SIZE,
-                y * TILE_SIZE,
-                TILE_SIZE,
-                TILE_SIZE
-            )
-
-            if cell == WALL:
-                pygame.draw.rect(screen, COLORS[WALL], rect)
-            else:
-                pygame.draw.rect(screen, COLORS[FLOOR], rect)
-
-                if cell == PLAYER:
-                    pygame.draw.circle(
-                        screen,
-                        COLORS[PLAYER],
-                        rect.center,
-                        TILE_SIZE // 3
-                    )
-
-                elif cell == EXIT:
-                    exit_rect = rect.inflate(-10, -10)
-                    pygame.draw.rect(screen, COLORS[EXIT], exit_rect)
-
-                elif cell == ENEMY:
-                    pygame.draw.circle(
-                        screen,
-                        COLORS[ENEMY],
-                        rect.center,
-                        TILE_SIZE // 3
-                    )
-
-                elif cell == ITEM:
-                    pygame.draw.circle(
-                        screen,
-                        COLORS[ITEM],
-                        rect.center,
-                        TILE_SIZE // 5
-                    )
-
-            pygame.draw.rect(screen, COLORS["GRID"], rect, 1)
-
-
 def create_game_map():
     dungeon, rooms = generate_dungeon()
 
@@ -161,20 +102,69 @@ def create_game_map():
     for _ in range(5):
         place_object(dungeon, ITEM)
 
-    return dungeon
+    return dungeon, player_x, player_y
 
 
-# =========================
-# main
-# =========================
+def draw_map(screen, dungeon):
+    screen.fill(COLORS["BACKGROUND"])
+
+    for y in range(MAP_HEIGHT):
+        for x in range(MAP_WIDTH):
+            cell = dungeon[y][x]
+            rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+
+            if cell == WALL:
+                pygame.draw.rect(screen, COLORS[WALL], rect)
+            else:
+                pygame.draw.rect(screen, COLORS[FLOOR], rect)
+
+                if cell == PLAYER:
+                    pygame.draw.circle(screen, COLORS[PLAYER], rect.center, TILE_SIZE // 3)
+
+                elif cell == EXIT:
+                    pygame.draw.rect(screen, COLORS[EXIT], rect.inflate(-10, -10))
+
+                elif cell == ENEMY:
+                    pygame.draw.circle(screen, COLORS[ENEMY], rect.center, TILE_SIZE // 3)
+
+                elif cell == ITEM:
+                    pygame.draw.circle(screen, COLORS[ITEM], rect.center, TILE_SIZE // 5)
+
+            pygame.draw.rect(screen, COLORS["GRID"], rect, 1)
+
+
+def move_player(dungeon, player_x, player_y, dx, dy):
+    new_x = player_x + dx
+    new_y = player_y + dy
+
+    target = dungeon[new_y][new_x]
+
+    if target == WALL:
+        return player_x, player_y
+
+    if target == ITEM:
+        print("아이템 획득!")
+
+    if target == ENEMY:
+        print("몬스터와 만남!")
+
+    if target == EXIT:
+        print("출구 도착!")
+
+    dungeon[player_y][player_x] = FLOOR
+    dungeon[new_y][new_x] = PLAYER
+
+    return new_x, new_y
+
+
 def main():
     pygame.init()
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("DSA Dungeon Map Generator")
+    pygame.display.set_caption("DSA Dungeon Game")
 
     clock = pygame.time.Clock()
-    dungeon = create_game_map()
+    dungeon, player_x, player_y = create_game_map()
 
     running = True
     while running:
@@ -182,10 +172,21 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-            # R 누르면 새 맵 생성
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
-                    dungeon = create_game_map()
+                    dungeon, player_x, player_y = create_game_map()
+
+                elif event.key == pygame.K_UP:
+                    player_x, player_y = move_player(dungeon, player_x, player_y, 0, -1)
+
+                elif event.key == pygame.K_DOWN:
+                    player_x, player_y = move_player(dungeon, player_x, player_y, 0, 1)
+
+                elif event.key == pygame.K_LEFT:
+                    player_x, player_y = move_player(dungeon, player_x, player_y, -1, 0)
+
+                elif event.key == pygame.K_RIGHT:
+                    player_x, player_y = move_player(dungeon, player_x, player_y, 1, 0)
 
         draw_map(screen, dungeon)
         pygame.display.flip()
