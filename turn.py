@@ -100,7 +100,9 @@ class TurnManager:
         #인벤토리 사용 명령 처리
         if command.startswith("i"):
             parts = command.split()
+            #입력이 i 1처럼 두 단어 인지 확인 & 두 번째 단어가 숫자인지 확인
             if len(parts) == 2 and parts[1].isdigit():
+                #현재 상태 저장
                 self.undo.push(self.snapshot())
                 self.add_log(player.inventory.use(int(parts[1]) - 1, player))
                 self.enemy_turn()
@@ -120,13 +122,17 @@ class TurnManager:
     def attack_adjacent_enemy(self) -> bool:
         player = self.game.player
         dungeon = self.game.dungeon
+        #공격 가능한 적들을 담을 리스트
         targets = []
+
         for enemy in dungeon.enemies:
             if enemy.alive and dungeon.distance((player.x, player.y), (enemy.x, enemy.y)) == 1:
                 targets.append(enemy)
         if not targets:
             self.add_log("No enemy in melee range.")
             return False
+        
+        #공격 가능한 적들 중 hp가 가장 낮은 적을 선택
         enemy = min(targets, key=lambda target: target.hp)
         damage = max(1, player.atk - enemy.defense)
         enemy.hp -= damage
@@ -137,9 +143,12 @@ class TurnManager:
             dungeon.remove_dead()
         return True
 
+
+    #플레이어 턴이 끝난 후 실행
     def enemy_turn(self) -> None:
         player = self.game.player
         dungeon = self.game.dungeon
+        #현재 적들이 차지하는 칸. 적들이 겹쳐서 이동하지 않도록 하기 위해 사용
         occupied = {(enemy.x, enemy.y) for enemy in dungeon.enemies if enemy.alive}
         for enemy in list(dungeon.enemies):
             if not enemy.alive:
@@ -151,7 +160,10 @@ class TurnManager:
                 self.add_log(f"{enemy.name} attacks for {damage}.")
                 continue
             if dist <= 8 or enemy.ai == "boss":
+                #적이 이동하기 전에 현재 위치를 occupied에서 제거하여 적이 자신의 위치로 이동할 수 있도록 함
                 occupied.discard((enemy.x, enemy.y))
+                
+                #적이 플레이어를 향해 한 칸 이동하도록 함. BFS를 사용하여 최적의 경로를 찾음    
                 step = dungeon.next_step_toward((enemy.x, enemy.y), (player.x, player.y), occupied)
                 if step != (player.x, player.y):
                     enemy.x, enemy.y = step
