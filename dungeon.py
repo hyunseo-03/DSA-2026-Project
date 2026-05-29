@@ -12,6 +12,7 @@ class Dungeon:
         self.grid = [[WALL for _ in range(WIDTH)] for _ in range(HEIGHT)]
         self.enemies = []
         self.items = {}
+        self.start = (1, 1)
         self.stairs = (WIDTH - 2, HEIGHT - 2)
         self.generate()
 
@@ -28,6 +29,7 @@ class Dungeon:
                     self.grid[yy][xx] = FLOOR
 
         centers = [(x + w // 2, y + h // 2) for x, y, w, h in rooms]
+        self.start = centers[0]
         for (x1, y1), (x2, y2) in zip(centers, centers[1:]):
             for x in range(min(x1, x2), max(x1, x2) + 1):
                 self.grid[y1][x] = FLOOR

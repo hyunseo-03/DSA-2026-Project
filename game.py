@@ -27,12 +27,7 @@ class Game:
         self.turn = TurnManager(self)
 
     def _place_player(self) -> None:
-        for y, row in enumerate(self.dungeon.grid):
-            for x, tile in enumerate(row):
-                if tile == ".":
-                    self.player.x = x
-                    self.player.y = y
-                    return
+        self.player.x, self.player.y = self.dungeon.start
 
     def next_floor(self) -> None:
         if self.floor_no >= self.max_floors:
