@@ -11,6 +11,7 @@ class TurnManager:
         self.started_at = time.time()
         self.logs = ["[1] Escape the dungeon!"]
 
+    #현제 게임 상태를 저장
     def snapshot(self):
         return {
             "player": self.game.player,
@@ -19,6 +20,7 @@ class TurnManager:
             "logs": list(self.logs),
         }
 
+    #저장된 게임 상태로 복원
     def restore(self, state) -> None:
         self.game.player = state["player"]
         self.game.dungeon = state["dungeon"]
@@ -27,22 +29,31 @@ class TurnManager:
 
     def add_log(self, message: str) -> None:
         self.logs.append(message)
+        
+        #로그가 너무 길어지지 않도록 최근 7개 로그만 유지
         self.logs = self.logs[-7:]
 
+    #플레이어 행동 처리
     def player_action(self, command: str) -> bool:
         player = self.game.player
         dungeon = self.game.dungeon
         moves = {"w": (0, -1), "s": (0, 1), "a": (-1, 0), "d": (1, 0)}
 
         if command == "attack":
+            #현재 상태 저장
             self.undo.push(self.snapshot())
             if self.attack_adjacent_enemy():
+                #적이 공격당한 후 바로 적의 행동이 이어지도록 함
                 self.enemy_turn()
             return True
 
+        #이동 명령 처리
         if command in moves:
+            #현재 상태 저장
             self.undo.push(self.snapshot())
+            #방향 가져오기
             dx, dy = moves[command]
+            #플레이어가 이동하려는 위치 계산
             nx, ny = player.x + dx, player.y + dy
             enemy = dungeon.enemy_at(nx, ny)
             if enemy:
@@ -53,31 +64,40 @@ class TurnManager:
                     player.kills += 1
                     self.add_log(f"{enemy.name} defeated. {player.gain_xp(enemy.xp)}")
                     dungeon.remove_dead()
+
+            #적이 없는 경우 이동 시도
             elif dungeon.is_walkable(nx, ny):
                 player.x, player.y = nx, ny
                 if (nx, ny) in dungeon.items:
                     item = dungeon.items.pop((nx, ny))
                     player.inventory.add(item)
                     self.add_log(f"Picked up {item.name}.")
+                
+                #계단 위치로 이동하면 다음 층으로 이동
                 if (nx, ny) == dungeon.stairs:
                     self.game.next_floor()
                     if self.game.finished:
                         return True
+            
+            #벽이나 장애물이 있는 경우
             else:
                 self.add_log("A wall blocks the way.")
             self.enemy_turn()
             return True
 
         if command == "u":
+            #이전 상태로 되돌리기
             state = self.undo.pop()
             if state:
                 self.restore(state)
+                #플레이어가 되돌리기를 사용할 때마다 undo_used 카운터 증가
                 self.game.player.undo_used += 1
                 self.add_log("Undo restored the previous turn.")
             else:
                 self.add_log("No undo state available.")
             return True
 
+        #인벤토리 사용 명령 처리
         if command.startswith("i"):
             parts = command.split()
             if len(parts) == 2 and parts[1].isdigit():
