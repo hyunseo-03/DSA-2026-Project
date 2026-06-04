@@ -25,7 +25,7 @@ python3 main.py
 
 - Dungeon map: 2D grid with random rooms and corridors
 - Undo system: bounded stack of deep-copied game states
-- Turn management: player action followed by enemy turn
+- Turn management: queue-based enemy turn processing after each player action
 - Item inventory: list-backed inventory with consumable/equipment effects
 - Weapons and armor: equipment changes attack and defense stats
 - Enemy difficulty: easy, normal, hard, and boss enemies
