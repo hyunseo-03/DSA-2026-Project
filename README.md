@@ -1,13 +1,45 @@
 # Dungeon Crawler RPG - DSA Project
 
-Python standard-library dungeon crawler that demonstrates core data structure
-and algorithm topics through gameplay.
+Python/Pygame dungeon crawler that demonstrates core data structure and
+algorithm topics through gameplay.
 
 ## Install and Run
 
+### macOS / Linux
+
 ```bash
-pip install -r requirements.txt
-python3 main.py
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python main.py
+```
+
+Or run the included setup script:
+
+```bash
+chmod +x setup_venv.sh
+./setup_venv.sh
+source .venv/bin/activate
+python main.py
+```
+
+### Windows
+
+```bat
+py -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python main.py
+```
+
+Or run the included setup script:
+
+```bat
+setup_venv.bat
+.venv\Scripts\activate
+python main.py
 ```
 
 ## Controls
