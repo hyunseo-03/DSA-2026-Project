@@ -1,8 +1,32 @@
 [
   {
+    "name": "Hi",
+    "score": 17200,
+    "time": 62,
+    "undo": 0
+  },
+  {
     "name": "hyunseo",
     "score": 13840,
     "time": 68,
+    "undo": 0
+  },
+  {
+    "name": "ManJo",
+    "score": 11440,
+    "time": 139,
+    "undo": 0
+  },
+  {
+    "name": "dda",
+    "score": 7200,
+    "time": 11,
+    "undo": 0
+  },
+  {
+    "name": "dd",
+    "score": 6000,
+    "time": 13,
     "undo": 0
   }
 ]
