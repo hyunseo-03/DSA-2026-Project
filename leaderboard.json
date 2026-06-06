@@ -12,6 +12,7 @@
     "undo": 0
   },
   {
+<<<<<<< HEAD
     "name": "ManJo",
     "score": 11440,
     "time": 139,
@@ -27,6 +28,17 @@
     "name": "dd",
     "score": 6000,
     "time": 13,
+=======
+    "name": "hi",
+    "score": 11500,
+    "time": 57,
+    "undo": 0
+  },
+  {
+    "name": "hiifii",
+    "score": 10220,
+    "time": 29,
+>>>>>>> 65ee06fb2b2967ba6f556fa6adfcc19228242252
     "undo": 0
   }
 ]

@@ -1,3 +1,4 @@
+from collections import deque
 import time
 
 from settings import MAX_UNDO
@@ -150,7 +151,10 @@ class TurnManager:
         dungeon = self.game.dungeon
         #현재 적들이 차지하는 칸. 적들이 겹쳐서 이동하지 않도록 하기 위해 사용
         occupied = {(enemy.x, enemy.y) for enemy in dungeon.enemies if enemy.alive}
-        for enemy in list(dungeon.enemies):
+        #Queue를 사용하여 이번 적 턴에 행동할 적들을 FIFO 순서로 처리
+        turn_queue = deque(enemy for enemy in dungeon.enemies if enemy.alive)
+        while turn_queue:
+            enemy = turn_queue.popleft()
             if not enemy.alive:
                 continue
             dist = dungeon.distance((enemy.x, enemy.y), (player.x, player.y))
